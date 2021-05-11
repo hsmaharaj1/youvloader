@@ -12,6 +12,8 @@ STATUS: On Development
 > CONS: Occasionally, It may freeze
 
 ## Screenshots
+![mockup_ui_1](https://user-images.githubusercontent.com/54274314/117853456-11548880-b2a6-11eb-8c28-06faff8b3d48.png)
+
 
 ## Preview
 ![record](https://user-images.githubusercontent.com/54274314/117842739-d9e0de80-b29b-11eb-8b30-576109b4d2f7.gif)
