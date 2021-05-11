@@ -1,3 +1,9 @@
+"""
+Project: YouVLoader
+Written by: Himanshu S.
+Designed by: Jagannath T.
+HS CODES Copyright 2021
+"""
 from PyQt5 import uic, QtCore, QtWidgets, QtGui
 import sys
 import os
