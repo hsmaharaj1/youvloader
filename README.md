@@ -9,7 +9,7 @@ STATUS: On Development
 - User-Friendly
 - Fast
 - Open Source
-> CONS: Occasionally, It may freeze
+> CONS: Occasionally, It may freeze but will never CRASH
 
 ## Screenshots
 ![mockup_ui_1](https://user-images.githubusercontent.com/54274314/117853456-11548880-b2a6-11eb-8c28-06faff8b3d48.png)
