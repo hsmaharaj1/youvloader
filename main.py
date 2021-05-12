@@ -4,6 +4,7 @@ Written by: Himanshu S.
 Designed by: Jagannath T.
 HS CODES Copyright 2021
 """
+
 from PyQt5 import uic, QtCore, QtWidgets, QtGui
 import sys
 import os
@@ -75,7 +76,7 @@ class MWindow(QtWidgets.QMainWindow):
     def minim(self):
         self.showMinimized()
 
-    # Main Method Utility
+    # Main Methods Utility
     def start_anime(self):
         self.movie_1 = QtGui.QMovie("Resources/downloading.gif")
         self.set_animation.setMovie(self.movie_1)
@@ -83,27 +84,45 @@ class MWindow(QtWidgets.QMainWindow):
 
     def progress_func(self, stream=None,chunk=None, bytes_remaining=None):
         self.start_anime()
-
+    
+    # For Animating at the end of the Download
     def complete_func(self, stream = None, filepath = None):
         self.movie_3 = QtGui.QMovie("Resources/done.gif")
         self.set_animation.setMovie(self.movie_3)
         self.movie_3.start()
         print("Completed!")
+    
+    # Pompt the User to select the saving location
+    def askLocation(self):
+        location = QtWidgets.QFileDialog.getExistingDirectory(self, "Save Location", "", QtWidgets.QFileDialog.ShowDirsOnly)
+        if location:
+            print(location)
+            return location
+        else:
+            self.download_btn.setCurrentIndex(-1)
 
-    def download(self, qual): # Used in 'selection' method
+    def download_created(self, qual): # Used in 'selection' method
         selected_stream = yt.streams.get_by_resolution(qual)
         self.progress_func()
-        selected_stream.download()
-
+        try:
+            self.download_btn.setCurrentIndex(-1)
+            selected_stream.download(self.askLocation() + "/")
+        except:
+            pass
+        
+    # This gets the quality that the user chooses
     def selection(self):
         global quality
         quality = self.download_btn.currentText()
-        print(quality)
-        self.download(quality) # Calls a method called 'download'
+        try:
+            self.download_created(quality) # Calls a method called 'download'
+        except:
+            self.start_anime()
     
     def get_input(self):
         return self.input_url.toPlainText()
-
+    
+    # Fetching the details about the Link from Youtube
     def download_youtube(self):
         global check
         if check != self.get_input():
@@ -127,10 +146,10 @@ class MWindow(QtWidgets.QMainWindow):
 
             # Display all the available qualities
             for i in videos:
-                # print(i.resolution, i.itag)
                 self.download_btn.addItem(i.resolution)
             self.download_btn.currentIndexChanged.connect(self.selection)
-        
+    
+    # Error message prompt
     def input_error(self):
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Information)
