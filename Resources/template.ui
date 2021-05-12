@@ -182,14 +182,32 @@ color: rgb(255, 255, 255);</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);
+     <string notr="true">QComboBox{
+color: rgb(255, 255, 255);
 background-color:qlineargradient(spread:pad, x1:0.412, y1:0.982955, x2:0.457, y2:0, stop:0 rgba(128, 0, 0, 255), stop:1 rgba(255, 0, 0, 255));
 border-radius: 10px;
-
-QListView
-{
-background-color : lightgreen;
-}</string>
+}
+QComboBox:on{
+padding-top: 0px;
+padding-left: 0px;
+color: white;
+background-color: qlineargradient(spread:pad, x1:0.412, y1:0.982955, x2:0.457, y2:0, stop:0 rgba(128, 0, 0, 255), stop:1 rgba(255, 0, 0, 255));
+}
+QComboBox:!on{
+color: white;
+background-color: qlineargradient(spread:pad, x1:0.412, y1:0.982955, x2:0.457, y2:0, stop:0 rgba(128, 0, 0, 255), stop:1 rgba(255, 0, 0, 255));
+}
+QComboBox::drop-down{
+subcontrol-origin: padding;
+subcontrol-position: top right;
+border-top-right-radius: 10px;
+border-bottom-right-radius: 10px;
+}
+QComboBox QAbstractItemView{
+background-color: qlineargradient(spread:pad, x1:0.412, y1:0.982955, x2:0.457, y2:0, stop:0 rgba(128, 0, 0, 255), stop:1 rgba(255, 0, 0, 255));
+color: white;
+}
+</string>
     </property>
     <property name="placeholderText">
      <string notr="true">   DOWNLOAD</string>
