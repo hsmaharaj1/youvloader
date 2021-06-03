@@ -151,8 +151,9 @@ class MWindow(QtWidgets.QMainWindow):
         if location:
             return location
         else:
-            self.loadTime(0)
             self.download_btn.setCurrentIndex(-1)
+            self.loadTime(0)
+            self.showPop()
 
     def download_created(self, _): # Used in 'selection' method
         try:
@@ -170,7 +171,7 @@ class MWindow(QtWidgets.QMainWindow):
     def selection(self):
         global QUALITY
         QUALITY = self.download_btn.currentText()
-        if "p" in QUALITY:
+        if self.download_btn.currentIndex() != -1:
             try:
                 global PATH
                 PATH = self.askLocation() + "/"
@@ -186,7 +187,7 @@ class MWindow(QtWidgets.QMainWindow):
     def initYoutube(self):
         global CHECK
         global TF
-        if CHECK != self.get_input() and TF == 0:
+        if CHECK != self.get_input():
             self.loadTime(1)
             worker1 = Worker(self.download_youtube)
             self.pool.start(worker1)
