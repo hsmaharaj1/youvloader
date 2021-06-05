@@ -1,13 +1,11 @@
-"""
-Project: YouVLoader
-Written by: Himanshu S.
-Designed by: Jagannath T.
-HS CODES Copyright 2021
-"""
-
+'''
+YouV Loader, File Type: Main
+Creator: Himanshu S.
+Designer: Jagannath T.
+HYTES Copyright (C) 2021
+'''
 from PyQt5 import uic, QtCore, QtWidgets, QtGui
 import sys
-from os import path
 import pytube
 from pytube.cli import on_progress
 
@@ -33,28 +31,30 @@ def paintEvent(self, event):
     # draw the icon and text
     painter.drawControl(QtWidgets.QStyle.CE_ComboBoxLabel, opt)
 
+# These two classes are for Multi-Threading Purposes
 class WorkerSignals(QtCore.QObject):
     finished = QtCore.pyqtSignal()
 
 class Worker(QtCore.QRunnable):
-    def __init__(self, fn, *args, **kwargs):
+    def __init__(self, fun, *args, **kwargs):
         super(Worker, self).__init__()
-        self.fn = fn
+        self.fun = fun
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals()
     
     @QtCore.pyqtSlot()
     def run(self):
-        global quality
-        self.fn(self.args)
+        self.fun(self.args)
         self.signals.finished.emit()
-        
-    
+
 class MWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MWindow, self).__init__()
         uic.loadUi("Resources/template.ui", self)
+
+        self.pool = QtCore.QThreadPool.globalInstance()
+
         self.offset = None
         self.stop = False
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
@@ -64,14 +64,13 @@ class MWindow(QtWidgets.QMainWindow):
 
         self.closebtn.clicked.connect(self.closefunc) 
         self.minimize.clicked.connect(self.minim)
-
-        # Other Members and Components
-        global CHECK
-        CHECK = ""
+        self.download_btn.setPlaceholderText("  DOWNLOAD")
+        self.download_btn.currentIndexChanged.connect(self.newSelection)
+        # Other UI Components
+        global check
+        check = ""
         global TF
         TF = 0
-        self.pool = QtCore.QThreadPool.globalInstance()
-        
         # Checking if the Data is entered
         self.download_btn.installEventFilter(self)
         self.download_btn.paintEvent = types.MethodType(paintEvent, self.download_btn)
@@ -109,6 +108,8 @@ class MWindow(QtWidgets.QMainWindow):
         # This is for Handling Download btn click
         elif object is self.download_btn and event.type() == QtCore.QEvent.MouseButtonPress:
             try:
+                global TF
+                TF = 0
                 self.initYoutube()
             except:
                 pass
@@ -120,12 +121,12 @@ class MWindow(QtWidgets.QMainWindow):
     def minim(self):
         self.showMinimized()
 
-    # Main Methods Utility
+    # Main Method Utility
     def start_anime(self):
         self.movie_1 = QtGui.QMovie("Resources/downloading.gif")
         self.set_animation.setMovie(self.movie_1)
         self.movie_1.start()
-        
+    
     def loadTime(self, b):
         self.movie_2 = QtGui.QMovie("Resources/loading.gif")
         self.set_animation.setMovie(self.movie_2)
@@ -137,15 +138,13 @@ class MWindow(QtWidgets.QMainWindow):
 
     def progress_func(self, stream=None,chunk=None, bytes_remaining=None):
         self.start_anime()
-    
-    # For Animating at the end of the Download
+
     def complete_func(self, stream = None, filepath = None):
         self.movie_3 = QtGui.QMovie("Resources/done.gif")
         self.set_animation.setMovie(self.movie_3)
         self.movie_3.start()
         print("Completed!")
     
-    # Pompt the User to select the saving location
     def askLocation(self):
         location = QtWidgets.QFileDialog.getExistingDirectory(self, "Save Location", "", QtWidgets.QFileDialog.ShowDirsOnly)
         if location:
@@ -155,81 +154,82 @@ class MWindow(QtWidgets.QMainWindow):
             self.loadTime(0)
             self.showPop()
 
+    # Required to sent to another Thread
     def download_created(self, _): # Used in 'selection' method
         try:
-            global YT
-            global QUALITY
             selected_stream = YT.streams.get_by_resolution(QUALITY)
             global PATH
             self.download_btn.setCurrentIndex(-1)
             selected_stream.download(PATH)
         except:
             self.download_btn.setCurrentIndex(-1)
-            self.showPop()
+            self.showPop()   
         
     # This gets the quality that the user chooses
-    def selection(self):
+    def newSelection(self):
         global QUALITY
+        global PATH
         QUALITY = self.download_btn.currentText()
         if self.download_btn.currentIndex() != -1:
             try:
-                global PATH
                 PATH = self.askLocation() + "/"
                 self.loadTime(0)
                 self.start_anime()
                 worker = Worker(self.download_created)
                 self.pool.start(worker)
                 worker.signals.finished.connect(self.complete_func)
-            except TypeError:
                 self.download_btn.setCurrentIndex(-1)
-                return
-    
-    def initYoutube(self):
-        global CHECK
-        global TF
-        if CHECK != self.get_input():
-            self.loadTime(1)
-            worker1 = Worker(self.download_youtube)
-            self.pool.start(worker1)
-            worker1.signals.finished.connect(self.showPop)
-            if TF == 1:
-                self.loadTime(0)
-                self.input_error()
-                TF = 0
-                
+            except:
+                pass
+
     def get_input(self):
         return self.input_url.toPlainText()
 
+    # Starting a Thread of Worker Class and initializes when Download_btn is clicked
+    def initYoutube(self):
+        global check
+        if check != self.get_input():
+            workerNew = Worker(self.download_youtube)
+            self.pool.start(workerNew)
+            self.loadTime(1)
+            workerNew.signals.finished.connect(self.showPop)
+
     def showPop(self):
+        global TF
+        if TF==1:
+            self.input_error()
+            self.loadTime(0)
+            TF = 0
         self.download_btn.showPopup()
     
     def hidePop(self):
         self.download_btn.hidePopup()
-    
-    # Fetching the details about the Link from Youtube
+
     def download_youtube(self, _):
-        global CHECK
+        global check
         global TF
-        CHECK = self.get_input()
+        check = self.get_input()
         self.download_btn.clear()
         enter_url = self.get_input()
-        global YT
         try:
+            global YT
             YT = pytube.YouTube(
                 enter_url,
-                on_progress_callback = on_progress, 
+                on_progress_callback = on_progress,
                 on_complete_callback = self.complete_func)
             videos = YT.streams.filter(mime_type="video/mp4", progressive="True")
+
+            # Displays all the available qualities
             for i in videos:
                 self.download_btn.addItem(str(i.resolution))
-            TF = 0
+            TF =0
         except:
             TF = 1
-        # Display all the available qualities
-        self.download_btn.currentIndexChanged.connect(self.selection)
-    
-    # Error message prompt
+            return
+            
     def input_error(self):
+        global TF
+        TF = 0
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Information)
         msg.setText("Opps!! Retry Again")
