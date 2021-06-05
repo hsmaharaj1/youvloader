@@ -3,6 +3,7 @@ This utility can help you download YouTube Video by just URL, really fast.
 <br>Run and Tested on Windows Only.
 
 STATUS: On Development
+VERSION: 1.1.2
 
 ## Pros
 - Easy to use
