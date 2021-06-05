@@ -3,6 +3,7 @@ YouV Loader, File Type: Main
 Creator: Himanshu S.
 Designer: Jagannath T.
 HYTES Copyright (C) 2021
+Version: 1.1.2
 '''
 from PyQt5 import uic, QtCore, QtWidgets, QtGui
 import sys
@@ -148,6 +149,7 @@ class MWindow(QtWidgets.QMainWindow):
     def askLocation(self):
         location = QtWidgets.QFileDialog.getExistingDirectory(self, "Save Location", "", QtWidgets.QFileDialog.ShowDirsOnly)
         if location:
+            # print(location)
             return location
         else:
             self.download_btn.setCurrentIndex(-1)
@@ -163,15 +165,16 @@ class MWindow(QtWidgets.QMainWindow):
             selected_stream.download(PATH)
         except:
             self.download_btn.setCurrentIndex(-1)
-            self.showPop()   
-        
-    # This gets the quality that the user chooses
+            self.showPop()
+
+    # Debug Purposes
     def newSelection(self):
         global QUALITY
         global PATH
         QUALITY = self.download_btn.currentText()
         if self.download_btn.currentIndex() != -1:
             try:
+                print(check)
                 PATH = self.askLocation() + "/"
                 self.loadTime(0)
                 self.start_anime()
@@ -225,6 +228,7 @@ class MWindow(QtWidgets.QMainWindow):
             TF =0
         except:
             TF = 1
+            print("Error1")
             return
             
     def input_error(self):
