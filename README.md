@@ -20,7 +20,7 @@ VERSION: 1.1.2
 
 
 ## Preview
-![record](https://user-images.githubusercontent.com/54274314/117842739-d9e0de80-b29b-11eb-8b30-576109b4d2f7.gif)
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/54274314/124425153-c88ced80-dd85-11eb-997e-8b726948ecaa.gif)
 
 ## Licence
 GPL-3.0
